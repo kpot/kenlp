@@ -1,2 +1,5 @@
 .idea/
 __pycache__/
+dist/
+.eggs/
+.pytest_cache/

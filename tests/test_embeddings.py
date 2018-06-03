@@ -1,6 +1,6 @@
 import os.path
 
-from kelp.mimic import pre_trained_mimic_model_path, MimicEmbedding
+from kenlp.mimic import pre_trained_mimic_model_path, MimicEmbedding
 
 
 def test_mimic_embeddings():

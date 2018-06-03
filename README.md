@@ -15,7 +15,7 @@ in your training data.
 A short example which can mimic word embeddings for OOV words and show
 which of the known words are closest to the produced vector:
 
-    from kelp.embeddings import MimicEmbedding
+    from kenlp.embeddings import MimicEmbedding
     from pathlib import Path
     
     mem = MimicEmbedding.load(
@@ -57,5 +57,5 @@ To train a MIMIC model for a new language you will need to first [download
 polyglot's embedding for that language](http://polyglot.readthedocs.io/en/latest/Download.html)
 and then run a command like this:
 
-    python -m kelp.mimic --save new_mimic_model.h5 --embeddings <path to downloaded polyglot embedding>
+    python -m kenlp.mimic --save new_mimic_model.h5 --embeddings <path to downloaded polyglot embedding>
 

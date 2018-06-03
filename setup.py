@@ -5,13 +5,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='kelp',
+    name='kenlp',
     # This allows to use git/hg to auto-generate new versions
     use_scm_version={"root": ".", "relative_to": __file__},
     setup_requires=['setuptools_scm'],
     description=('A set of natural language processing tools '
                  'written using Keras'),
-    url='https://github.com/kpot/kelp',
+    url='https://github.com/kpot/kenlp',
     author='Kirill Mavreshko',
     author_email='kimavr@gmail.com',
 
@@ -34,20 +34,7 @@ setup(
     keywords='development',
 
     packages=find_packages(where='.', exclude=['tests']),
-    # package_dir={'kelp': 'kelp'},
     install_requires=['Keras>=2.0.8', 'PyICU', 'polyglot'],
     tests_require=['pytest'],
-
-    # To provide executable scripts, use entry points in preference to the
-    # "scripts" keyword. Entry points provide cross-platform support and allow
-    # `pip` to create the appropriate form of executable for the target
-    # platform.
-    #
-    # For example, the following would provide a command called `sample` which
-    # executes the function `main` from this package when invoked:
-    # entry_points={
-    #     'console_scripts': [
-    #         'kelp-mimic-train=kelp.mimic:main',
-    #     ],
-    # },
+    include_package_data=True,
 )
