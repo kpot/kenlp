@@ -8,9 +8,10 @@ from pathlib import Path
 from kenlp.mimic import MimicEmbedding, pre_trained_mimic_model_path
 
 if __name__ == '__main__':
+    language = 'en'
     mem = MimicEmbedding.load(
-        str(Path.home() / 'polyglot_data/embeddings2/en/embeddings_pkl.tar.bz2'),
-        pre_trained_mimic_model_path('en'))
+        str(Path.home() / f'polyglot_data/embeddings2/{language}/embeddings_pkl.tar.bz2'),
+        pre_trained_mimic_model_path(language))
     while True:
         w = input('Enter a word: ')
         if w not in mem.embedding:

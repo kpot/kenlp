@@ -2,11 +2,11 @@ NLP tools for Keras
 ===================
 A set of tools for natural language processing using Keras.
 
-MIMIC embeddings
+MIMICK embeddings
 ----------------
 Implementation of paper ["Mimicking Word Embeddings using Subword RNNs"](https://arxiv.org/abs/1707.06961).
-MIMIC allows to avoid OOV (out of vocabulary) problem by imitating the original
-pre-trained word embeddings using small character-based model, this making
+MIMICK allows to avoid OOV (out of vocabulary) problem by imitating the original
+pre-trained word embeddings using small character-based model, thus making
 `<UNK>` word embeddings unnecessary. Benefits
 (in comparison with FastText, for example): very low resource
 requirements and significant boost in accuracy due to the absence of `<UNK>`
@@ -47,15 +47,38 @@ The example above being run with some fictional words:
     'abroktose' is an unknown word which has to be mimicked
     similar words: ['olefin', 'analyte', 'epsilon', 'reactant', 'granule', 'aerosol', 'alkene', 'anionic', 'chloroplast', 'erythrocyte']
 
-The word "dunamite" is a misspelled "dynamite", but MIMIC "understands" that this
+The word "dunamite" is a misspelled "dynamite", but MIMICK "understands" that this
 is probably some high-energy and explosive material.
 It was also able to guess that Kaa looks like an asian name, and "Karll" is something european.
 "abroktose" turns out to be something vaguely scientific, probably about chemistry or biology,
 which also makes sense.
 
-To train a MIMIC model for a new language you will need to first [download
+To train a MIMICK model for a new language you will need first to [download
 polyglot's embedding for that language](http://polyglot.readthedocs.io/en/latest/Download.html)
 and then run a command like this:
 
     python -m kenlp.mimic --save new_mimic_model.h5 --embeddings <path to downloaded polyglot embedding>
+
+
+Installation
+------------
+Assuming you use virtualenv or venv, installation on Ubuntu >= 16.04 looks like
+
+    sudo apt-get install libicu-dev
+    git clone https://github.com/kpot/kenlp.git
+    cd kenlp
+    pip install .
+
+On MacOS:
+
+    brew install icu4c
+    brew link --force icu4c
+    git clone https://github.com/kpot/kenlp.git
+    cd kenlp
+    pip install .
+    brew unlink icu4c
+
+You will also need to install any of Keras's backends, like TensorFlow:
+
+    pip install tensorflow
 
