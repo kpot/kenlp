@@ -24,7 +24,6 @@ from keras.models import Model, load_model
 
 TEST_SET_SIZE = 1000
 NUM_CHARS = 1 << 16
-LEARNING_RATE = 1e-2
 
 
 class MimicEmbedding:
@@ -97,11 +96,11 @@ def create_mimic_model(max_word_length: int, embedding_size: int) -> Model:
                             name='mimic_word')
     char_embeddings = emb(word_characters)
     rnn_out = (
-        Bidirectional(LSTM(embedding_size),
+        Bidirectional(LSTM(64),
                       merge_mode='concat', name='mimic_rnn')
         (char_embeddings))
     dense1 = (
-        Dense(2 * embedding_size, activation='tanh', name='mimic_dense1')
+        Dense(100, activation='selu', name='mimic_dense1')
         (rnn_out))
     dense2 = (
         Dense(embedding_size, activation=None, name='mimic_dense2')
@@ -136,6 +135,7 @@ def train_mimic_model(polyglot_embedding_path: str,
                       mimic_model_path: str,
                       max_word_length: int,
                       num_epochs: int,
+                      learning_rate: float,
                       use_dev_set: bool):
     full_embedding = PolyEmbedding.load(str(polyglot_embedding_path))
     embedding_size = len(full_embedding.zero_vector())
@@ -148,29 +148,53 @@ def train_mimic_model(polyglot_embedding_path: str,
         train_X, train_Y = all_X, all_Y
         validation_data = None
     model = create_mimic_model(max_word_length, embedding_size)
-    optimizer = optimizers.Adam(lr=LEARNING_RATE)
+    optimizer = optimizers.Adam(lr=learning_rate)
     model.compile(optimizer, loss=mse_loss)
     if os.path.exists(mimic_model_path):
         model.load_weights(mimic_model_path)
-    save_model = ModelCheckpoint(mimic_model_path, verbose=1)
+    loss_to_monitor = 'val_loss' if use_dev_set else 'loss'
+    save_model = ModelCheckpoint(
+        mimic_model_path, verbose=1, monitor=loss_to_monitor,
+        save_best_only=True)
     lr_reducer = ReduceLROnPlateau(
-        verbose=1, factor=0.2, min_lr=1e-6,
-        monitor='val_loss' if use_dev_set else 'loss')
+        verbose=1, factor=0.2, min_lr=1e-7, monitor=loss_to_monitor,
+        cooldown=100)
     model.fit(train_X, train_Y,
               batch_size=1024, epochs=num_epochs,
               callbacks=[save_model, lr_reducer],
               validation_data=validation_data)
 
 
+def contain_tf_gpu_mem_usage():
+    """
+    By default TensorFlow may try to reserve all available GPU memory
+    making it impossible to train multiple agents at once.
+    This function will disable such behaviour in TensorFlow.
+    """
+    try:
+        # noinspection PyPackageRequirements
+        import tensorflow as tf
+    except ImportError:
+        pass
+    else:
+        from keras.backend.tensorflow_backend import set_session
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True  # dynamically grow the memory
+        sess = tf.Session(config=config)
+        set_session(sess)
+
+
 def main():
     _parser = argparse.ArgumentParser(description='Trains MIMIC model')
     _parser.add_argument(
-        '--epochs', type=int, default=1000, help='Number of epochs to train')
+        '--epochs', type=int, default=10000, help='Number of epochs to train')
     _parser.add_argument(
         '--maxlen', type=int, default=20, help='Max word length')
     _parser.add_argument(
         '--save', type=str, required=True, metavar='PATH',
         help='Path where the model should be saved')
+    _parser.add_argument(
+        '--lr', type=float, default=1e-3, help='Initial learning rate')
     _parser.add_argument(
         '--devset', action='store_true',
         help=('Enables training with a separate dev '
@@ -180,9 +204,10 @@ def main():
         metavar='PATH', help='Path to polyglot embeddings')
     _options = _parser.parse_args()
     random.seed(0)
+    contain_tf_gpu_mem_usage()
     train_mimic_model(
         _options.embeddings, _options.save, _options.maxlen,
-        _options.epochs, _options.devset)
+        _options.epochs, _options.lr, _options.devset)
 
 
 if __name__ == '__main__':
