@@ -15,7 +15,7 @@ in your training data.
 A short example which can mimic word embeddings for OOV words and show
 which of the known words are closest to the produced vector:
 
-    from kenlp.embeddings import MimicEmbedding
+    from kenlp.mimic import MimicEmbedding, pre_trained_mimic_model_path
     from pathlib import Path
     
     mem = MimicEmbedding.load(
@@ -31,9 +31,13 @@ which of the known words are closest to the produced vector:
 
 The example above being run with some fictional words:
 
-    Enter a word: dunamite
-    'dunamite' is an unknown word which has to be mimicked
-    similar words: ['phosphine', 'superoxide', 'hydrazine', 'phospholipid', 'histidine', 'trypsin', 'oxalate', 'surfactant', 'biotin', 'acetaldehyde']
+    Enter a word: trintiful
+    'trintiful' is an unknown word which has to be mimicked
+    similar words: ['banal', 'cliched', 'preposterous', 'horrifying', 'horrid', 'baffling', 'disagreeable', 'pedantic', 'farcical', 'ludicrous']
+    
+    Enter a word: unfrogable
+    'unfrogable' is an unknown word which has to be mimicked
+    similar words: ['unmanageable', 'unwelcome', 'unbreakable', 'irreplaceable', 'unsatisfying', 'anachronistic', 'unrestrained', 'outmoded', 'unfashionable', 'unattainable']
 
     Enter a word: Kaa
     'Kaa' is an unknown word which has to be mimicked
@@ -45,14 +49,18 @@ The example above being run with some fictional words:
     
     Enter a word: abroktose
     'abroktose' is an unknown word which has to be mimicked
-    similar words: ['olefin', 'analyte', 'epsilon', 'reactant', 'granule', 'aerosol', 'alkene', 'anionic', 'chloroplast', 'erythrocyte']
+    similar words: ['phosphine', 'adenine', 'albumin', 'oxalate', 'osmium', 'IgG', 'capsaicin', 'casein', 'amide', 'azide']
 
-The word "dunamite" is a misspelled "dynamite", but MIMICK "understands" that this
-is probably some high-energy and explosive material.
-It was also able to guess that Kaa looks like an asian name, and "Karll" is something european.
-"abroktose" turns out to be something vaguely scientific, probably about chemistry or biology,
+The word "trintiful" is fictional but MIMICK "understands" that this
+is probably some kind of adjective. It assumed that "unfrogable"
+is a negating adjective. It was also able to guess that Kaa looks like
+an asian name, and "Karll" is something european. "abroktose" turns out
+to be something vaguely scientific, probably about chemistry or biology,
 which also makes sense.
 
+
+The code already contains [pre-trained models for few languages](kenlp/pretrained/mimic)
+(see the example on how to use them).
 To train a MIMICK model for a new language you will need first to [download
 polyglot's embedding for that language](http://polyglot.readthedocs.io/en/latest/Download.html)
 and then run a command like this:
